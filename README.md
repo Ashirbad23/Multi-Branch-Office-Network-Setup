@@ -1,7 +1,7 @@
 # Multi-Branch Office Network Setup
 
 ## Objective
-Design and configure a network for a company with two branches in different cities, connected via a WAN link. The configuration includes subnetting, routing, and Port Address Translation (PAT) to ensure efficient communication between branches and secure access to the internet.
+Design and configure a network for a company with three branches in different cities, connected via WAN links. The configuration includes subnetting, routing, and Port Address Translation (PAT) to ensure efficient communication between branches and secure access to the internet.
 
 ---
 
@@ -9,7 +9,7 @@ Design and configure a network for a company with two branches in different citi
 
 ### General Requirements
 1. Subnetting must be used to allocate IP addresses efficiently for departments within each branch.
-2. Routing must be configured to enable communication between the two branches over the WAN link.
+2. Routing must be configured to enable communication between the three branches over the WAN links.
 3. Port Address Translation (PAT) must be implemented to provide internet access to all devices using a single public IP.
 4. The design must ensure scalability for future department additions.
 
@@ -22,32 +22,58 @@ Design and configure a network for a company with two branches in different citi
 ---
 
 ## Subnetting Details
-The network `198.168.1.0/24` is divided into 8 subnets using a `/27` subnet mask:
 
-| Subnet | Range                 | Usable IPs                |
-|--------|-----------------------|---------------------------|
-| 1      | 198.168.1.0/27       | 198.168.1.1 - 198.168.1.30 |
-| 2      | 198.168.1.32/27      | 198.168.1.33 - 198.168.1.62 |
-| 3      | 198.168.1.64/27      | 198.168.1.65 - 198.168.1.94 |
-| 4      | 198.168.1.96/27      | 198.168.1.97 - 198.168.1.126 |
-| 5      | 198.168.1.128/27     | 198.168.1.129 - 198.168.1.158 |
-| 6      | 198.168.1.160/27     | 198.168.1.161 - 198.168.1.190 |
-| 7      | 198.168.1.192/27     | 198.168.1.193 - 198.168.1.222 |
-| 8      | 198.168.1.224/27     | 198.168.1.225 - 198.168.1.254 |
+The network `198.168.1.0/24` is divided using a mix of fixed-length and variable-length subnet masks (VLSM) to efficiently allocate IP addresses. Below are the details:
 
-### Subnet Allocation
-- **Bangalore Office**:
-  - HR: Subnet 1 (198.168.1.0/27)
-  - IT: Subnet 2 (198.168.1.32/27)
-- **Cuttack Office**:
-  - HR: Subnet 3 (198.168.1.64/27)
-  - IT: Subnet 4 (198.168.1.96/27)
-- **Bhubaneswar Office**:
-  - HR: Subnet 5 (198.168.1.128/27)
-  - IT: Subnet 6 (198.168.1.160/27)
-- **WAN Links**:
-  - WAN 1: Subnet 7 (198.168.1.192/27)
-  - WAN 2: Subnet 8 (198.168.1.224/27)
+### VLSM Subnet Allocation for WAN Links
+To allocate only two usable IPs per WAN link, the `198.168.1.224/27` subnet was further divided into smaller subnets using a `/30` mask:
+
+| Subnet | Range                  | Usable IPs        | Purpose  |
+|--------|------------------------|-------------------|----------|
+| 1      | 198.168.1.224/30      | 198.168.1.225-226 | WAN 1    |
+| 2      | 198.168.1.228/30      | 198.168.1.229-230 | WAN 2    |
+
+### Subnet Allocation for Branches
+The remaining subnets were divided using a `/27` mask:
+
+| Subnet | Range                 | Usable IPs                | Location              |
+|--------|-----------------------|---------------------------|-----------------------|
+| 1      | 198.168.1.0/27       | 198.168.1.1 - 198.168.1.30 | Bangalore HR         |
+| 2      | 198.168.1.32/27      | 198.168.1.33 - 198.168.1.62 | Bangalore IT         |
+| 3      | 198.168.1.64/27      | 198.168.1.65 - 198.168.1.94 | Cuttack HR           |
+| 4      | 198.168.1.96/27      | 198.168.1.97 - 198.168.1.126 | Cuttack IT           |
+| 5      | 198.168.1.128/27     | 198.168.1.129 - 198.168.1.158 | Bhubaneswar HR       |
+| 6      | 198.168.1.160/27     | 198.168.1.161 - 198.168.1.190 | Bhubaneswar IT       |
+
+---
+
+## Subnetting Calculation Details
+
+### Formula
+- **Subnet Mask for `/30`**:
+  - Block size: `2^(32 - subnet bits) = 2^(32 - 30) = 4`
+  - Usable IPs: Block size - 2 (network and broadcast addresses)
+  - Usable IPs per subnet: 2
+- **Subnet Mask for `/27`**:
+  - Block size: `2^(32 - 27) = 32`
+  - Usable IPs: Block size - 2
+  - Usable IPs per subnet: 30
+
+### Steps for WAN Link Subnetting
+1. Start with `198.168.1.224/27`.
+2. Subdivide into `/30` subnets:
+   - Subnet 1: `198.168.1.224/30` (Usable: `198.168.1.225-226`)
+   - Subnet 2: `198.168.1.228/30` (Usable: `198.168.1.229-230`)
+
+### Steps for Department Subnetting
+1. Allocate `/27` subnets for each department.
+2. Assign the subnets in sequence:
+   - Bangalore HR: `198.168.1.0/27`
+   - Bangalore IT: `198.168.1.32/27`
+   - Cuttack HR: `198.168.1.64/27`
+   - Cuttack IT: `198.168.1.96/27`
+   - Bhubaneswar HR: `198.168.1.128/27`
+   - Bhubaneswar IT: `198.168.1.160/27`
 
 ---
 
@@ -85,7 +111,7 @@ Router(config)# exit
 ```
 
 ### Static Routing Example
-Static routes must be configured to enable communication between the branches via the WAN link. Example:
+Static routes must be configured to enable communication between the branches via the WAN links. Example:
 
 ```shell
 Router(config)# ip route 198.168.1.64 255.255.255.224 <WAN_next_hop_IP>
