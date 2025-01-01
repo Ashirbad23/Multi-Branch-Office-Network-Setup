@@ -32,6 +32,12 @@ To allocate only two usable IPs per WAN link, the `198.168.1.224/27` subnet was 
 |--------|------------------------|-------------------|----------|
 | 1      | 198.168.1.224/30      | 198.168.1.225-226 | WAN 1    |
 | 2      | 198.168.1.228/30      | 198.168.1.229-230 | WAN 2    |
+| 3      | 198.168.1.232/30      | 198.168.1.233-234 | Reserved |
+| 4      | 198.168.1.236/30      | 198.168.1.237-238 | Reserved |
+| 5      | 198.168.1.240/30      | 198.168.1.241-242 | Reserved |
+| 6      | 198.168.1.244/30      | 198.168.1.245-246 | Reserved |
+| 7      | 198.168.1.248/30      | 198.168.1.249-250 | Reserved |
+| 8      | 198.168.1.252/30      | 198.168.1.253-254 | Reserved |
 
 ### Subnet Allocation for Branches
 The remaining subnets were divided using a `/27` mask:
@@ -44,6 +50,8 @@ The remaining subnets were divided using a `/27` mask:
 | 4      | 198.168.1.96/27      | 198.168.1.97 - 198.168.1.126 | Cuttack IT           |
 | 5      | 198.168.1.128/27     | 198.168.1.129 - 198.168.1.158 | Bhubaneswar HR       |
 | 6      | 198.168.1.160/27     | 198.168.1.161 - 198.168.1.190 | Bhubaneswar IT       |
+| 7      | 198.168.1.192/27     | 198.168.1.193 - 198.168.1.222 | Reserved for Future Branch |
+| 8      | 198.168.1.224/27     | 198.168.1.225 - 198.168.1.254 | Reserved for WAN Links |
 
 ---
 
@@ -64,6 +72,12 @@ The remaining subnets were divided using a `/27` mask:
 2. Subdivide into `/30` subnets:
    - Subnet 1: `198.168.1.224/30` (Usable: `198.168.1.225-226`)
    - Subnet 2: `198.168.1.228/30` (Usable: `198.168.1.229-230`)
+   - Subnet 3: `198.168.1.232/30` (Usable: `198.168.1.233-234`)
+   - Subnet 4: `198.168.1.236/30` (Usable: `198.168.1.237-238`)
+   - Subnet 5: `198.168.1.240/30` (Usable: `198.168.1.241-242`)
+   - Subnet 6: `198.168.1.244/30` (Usable: `198.168.1.245-246`)
+   - Subnet 7: `198.168.1.248/30` (Usable: `198.168.1.249-250`)
+   - Subnet 8: `198.168.1.252/30` (Usable: `198.168.1.253-254`)
 
 ### Steps for Department Subnetting
 1. Allocate `/27` subnets for each department.
@@ -74,6 +88,7 @@ The remaining subnets were divided using a `/27` mask:
    - Cuttack IT: `198.168.1.96/27`
    - Bhubaneswar HR: `198.168.1.128/27`
    - Bhubaneswar IT: `198.168.1.160/27`
+   - Reserved for Future Branch: `198.168.1.192/27`
 
 ---
 
